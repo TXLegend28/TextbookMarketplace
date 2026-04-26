@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="180dp"
+    android:background="?attr/colorPrimary"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/nav_header_image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/outline_book_24"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@android:color/white" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Textbook Marketplace"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CSC313 - Assignment 2"
+        android:textColor="@android:color/white"
+        android:textSize="14sp" />
+</LinearLayout>

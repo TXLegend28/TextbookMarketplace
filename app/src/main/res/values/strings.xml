@@ -1,3 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">TextbookMarketplace</string>
+    <string name="app_name">Textbook Marketplace</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <!-- Additional strings you might need -->
+    <string name="search_hint">Search by title or seller...</string>
+    <string name="no_textbooks">No textbooks available</string>
+    <string name="submit_listing">Submit Listing</string>
+    <string name="add_textbook">Add Textbook Listing</string>
 </resources>
