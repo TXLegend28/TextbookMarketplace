@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="primary">#FF2196F3</color>
-    <color name="primary_dark">#FF1976D2</color>
-    <color name="primary_light">#FFBBDEFB</color>
-    <color name="accent">#FFFF9800</color>
-    <color name="accent_dark">#FFF57C00</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="black">#FF000000</color>
-    <color name="background">#FFF5F5F5</color>
-    <color name="text_primary">#FF212121</color>
-    <color name="text_secondary">#FF757575</color>
+    <color name="colorPrimary">#dcc90d</color>
+    <color name="colorPrimaryVariant">#b3a30a</color>
+    <color name="colorOnPrimary">#000000</color>
+    <color name="colorSecondary">#dcc90d</color>
+    <color name="colorOnSecondary">#000000</color>
+    <color name="colorBackground">#FFFFFF</color>
+    <color name="colorSurface">#FFFFFF</color>
+    <color name="colorError">#B00020</color>
+    <color name="pdf_page_bg">#F5F5F5</color>
 </resources>

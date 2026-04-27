@@ -8,43 +8,25 @@ import com.example.textbookmarketplace.database.TextbookDao;
 import com.example.textbookmarketplace.model.Textbook;
 import java.util.List;
 
-
 public class TextbookViewModel extends AndroidViewModel {
-    private TextbookDao textbookDao;
+    private TextbookDao dao;
     private LiveData<List<Textbook>> allTextbooks;
 
-    public TextbookViewModel(Application application) {
-        super(application);
-        AppDatabase database = AppDatabase.getInstance(application);
-        textbookDao = database.textbookDao();
-        allTextbooks = textbookDao.getAllTextbooks();
+    public TextbookViewModel(Application app) {
+        super(app);
+        dao = AppDatabase.getInstance(app).textbookDao();
+        allTextbooks = dao.getAllTextbooks();
     }
 
-    public void insert(Textbook textbook) {
-        textbookDao.insert(textbook);
-    }
+    public void insert(Textbook t) { dao.insert(t); }
+    public void update(Textbook t) { dao.update(t); }
+    public void delete(Textbook t) { dao.delete(t); }
 
-    public void update(Textbook textbook) {
-        textbookDao.update(textbook);
-    }
+    public LiveData<List<Textbook>> getAllTextbooks() { return allTextbooks; }
+    public LiveData<List<Textbook>> search(String q) { return dao.searchTextbooks(q); }
+    public LiveData<List<Textbook>> getBySeller(String email) { return dao.getTextbooksBySeller(email); }
 
-    public void delete(Textbook textbook) {
-        textbookDao.delete(textbook);
-    }
-
-    public LiveData<List<Textbook>> getAllTextbooks() {
-        return allTextbooks;
-    }
-
-    public LiveData<List<Textbook>> searchTextbooks(String query) {
-        return textbookDao.searchTextbooks(query);
-    }
-
-    public Textbook getTextbookByIsbn(String isbn) {
-        return textbookDao.getTextbookByIsbn(isbn);
-    }
-
-    public boolean isDuplicateTextbook(String isbn) {
-        return textbookDao.getTextbookByIsbn(isbn) != null;
-    }
+    public Textbook getByIsbn(String isbn) { return dao.getTextbookByIsbn(isbn); }
+    public Textbook getById(int id) { return dao.getTextbookById(id); }
+    public boolean isDuplicate(String isbn) { return dao.getTextbookByIsbn(isbn) != null; }
 }

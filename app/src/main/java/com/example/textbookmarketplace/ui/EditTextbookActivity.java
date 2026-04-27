@@ -19,22 +19,23 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.textbookmarketplace.R;
 import com.example.textbookmarketplace.model.Textbook;
 import com.example.textbookmarketplace.utils.FileHelper;
-import com.example.textbookmarketplace.utils.SettingsManager;
 import com.example.textbookmarketplace.viewmodel.TextbookViewModel;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.squareup.picasso.Picasso;
 import java.io.File;
 
-public class AddTextbookActivity extends AppCompatActivity {
-    private EditText etTitle, etAuthor, etIsbn, etEdition, etCourse;
-    private EditText etCopies, etPrice, etDescription;
+public class EditTextbookActivity extends AppCompatActivity {
+    public static final String EXTRA_ID = "book_id";
+    private TextbookViewModel vm;
+    private Textbook current;
+    private int bookId;
+
+    private EditText etTitle, etAuthor, etIsbn, etEdition, etCourse, etCopies, etPrice, etDescription;
     private EditText etSellerName, etSellerEmail, etBankName, etAccountNumber;
     private RadioGroup rgCondition;
-    private Button btnSubmit, btnPickImage, btnPickFile;
+    private Button btnUpdate, btnPickImage, btnPickFile;
     private ImageView ivPreview;
     private TextView tvFileName;
-    private TextbookViewModel vm;
 
     private String localImagePath = null;
     private String digitalFilePath = null;
@@ -60,16 +61,17 @@ public class AddTextbookActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_textbook);
+        setContentView(R.layout.activity_add_textbook); // re-use layout
         vm = new ViewModelProvider(this).get(TextbookViewModel.class);
+        bookId = getIntent().getIntExtra(EXTRA_ID, -1);
 
         setupToolbar();
         initViews();
-        prefillSeller();
+        loadBook();
 
         btnPickImage.setOnClickListener(v -> imagePicker.launch("image/*"));
         btnPickFile.setOnClickListener(v -> docPicker.launch(new String[]{"application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"}));
-        btnSubmit.setOnClickListener(v -> submit());
+        btnUpdate.setOnClickListener(v -> update());
 
         getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
             @Override public void handleOnBackPressed() { finish(); }
@@ -81,8 +83,10 @@ public class AddTextbookActivity extends AppCompatActivity {
         setSupportActionBar(tb);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setTitle("Add Textbook");
+            getSupportActionBar().setTitle("Update Listing");
         }
+        btnUpdate = findViewById(R.id.btn_submit);
+        btnUpdate.setText("Update Listing");
     }
 
     private void initViews() {
@@ -99,79 +103,80 @@ public class AddTextbookActivity extends AppCompatActivity {
         etBankName = findViewById(R.id.et_bank_name);
         etAccountNumber = findViewById(R.id.et_account_number);
         rgCondition = findViewById(R.id.rg_condition);
-        btnSubmit = findViewById(R.id.btn_submit);
         btnPickImage = findViewById(R.id.btn_pick_image);
         btnPickFile = findViewById(R.id.btn_pick_file);
         ivPreview = findViewById(R.id.iv_preview);
         tvFileName = findViewById(R.id.tv_file_name);
     }
 
-    private void prefillSeller() {
-        etSellerName.setText(SettingsManager.getSellerName(this));
-        etSellerEmail.setText(SettingsManager.getSellerEmail(this));
-        etBankName.setText(SettingsManager.getBankName(this));
-        etAccountNumber.setText(SettingsManager.getAccountNumber(this));
+    private void loadBook() {
+        current = vm.getById(bookId);
+        if (current == null) { finish(); return; }
+
+        etTitle.setText(current.getTitle());
+        etAuthor.setText(current.getAuthor());
+        etIsbn.setText(current.getIsbn());
+        etEdition.setText(current.getEdition());
+        etCourse.setText(current.getCourse());
+        etCopies.setText(String.valueOf(current.getCopies()));
+        etPrice.setText(String.valueOf(current.getPrice()));
+        etDescription.setText(current.getDescription());
+        etSellerName.setText(current.getSellerName());
+        etSellerEmail.setText(current.getSellerEmail());
+        etBankName.setText(current.getBankName());
+        etAccountNumber.setText(current.getAccountNumber());
+
+        localImagePath = current.getLocalImagePath();
+        digitalFilePath = current.getDigitalFilePath();
+        digitalFileType = current.getDigitalFileType();
+
+        if (localImagePath != null) Picasso.get().load(new File(localImagePath)).into(ivPreview);
+        if (digitalFileType != null) tvFileName.setText("Attached: " + digitalFileType.toUpperCase());
+
+        // select condition radio
+        for (int i = 0; i < rgCondition.getChildCount(); i++) {
+            RadioButton rb = (RadioButton) rgCondition.getChildAt(i);
+            if (rb.getText().toString().equalsIgnoreCase(current.getCondition())) {
+                rgCondition.check(rb.getId());
+                break;
+            }
+        }
     }
 
-    private void submit() {
+    private void update() {
         String title = etTitle.getText().toString().trim();
         String author = etAuthor.getText().toString().trim();
-        String isbn = etIsbn.getText().toString().trim();
-
-        if (title.isEmpty() || author.isEmpty() || isbn.isEmpty()) {
-            Snackbar.make(btnSubmit, "Fill required fields (*)", Snackbar.LENGTH_SHORT).show();
+        if (title.isEmpty() || author.isEmpty()) {
+            Snackbar.make(btnUpdate, "Title and Author required", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
-        int copies; double price;
+        current.setTitle(title);
+        current.setAuthor(author);
+        current.setEdition(etEdition.getText().toString().trim());
+        current.setCourse(etCourse.getText().toString().trim());
+        current.setDescription(etDescription.getText().toString().trim());
+        current.setSellerName(etSellerName.getText().toString().trim());
+        current.setSellerEmail(etSellerEmail.getText().toString().trim());
+        current.setBankName(etBankName.getText().toString().trim());
+        current.setAccountNumber(etAccountNumber.getText().toString().trim());
+        current.setLocalImagePath(localImagePath);
+        current.setDigitalFilePath(digitalFilePath);
+        current.setDigitalFileType(digitalFileType);
+
         try {
-            copies = Integer.parseInt(etCopies.getText().toString().trim());
-            price = Double.parseDouble(etPrice.getText().toString().trim());
+            current.setCopies(Integer.parseInt(etCopies.getText().toString().trim()));
+            current.setPrice(Double.parseDouble(etPrice.getText().toString().trim()));
         } catch (Exception e) {
-            Snackbar.make(btnSubmit, "Valid copies & price required", Snackbar.LENGTH_SHORT).show();
-            return;
-        }
-        if (copies <= 0 || price <= 0) {
-            Snackbar.make(btnSubmit, "Copies and price must be > 0", Snackbar.LENGTH_SHORT).show();
+            Snackbar.make(btnUpdate, "Invalid number format", Snackbar.LENGTH_SHORT).show();
             return;
         }
 
-        String sellerName = etSellerName.getText().toString().trim();
-        String sellerEmail = etSellerEmail.getText().toString().trim();
-        String bankName = etBankName.getText().toString().trim();
-        String accountNumber = etAccountNumber.getText().toString().trim();
+        int sel = rgCondition.getCheckedRadioButtonId();
+        if (sel != -1) current.setCondition(((RadioButton)findViewById(sel)).getText().toString());
 
-        if (sellerName.isEmpty() || sellerEmail.isEmpty() || bankName.isEmpty() || accountNumber.isEmpty()) {
-            Snackbar.make(btnSubmit, "Complete seller & banking info", Snackbar.LENGTH_SHORT).show();
-            return;
-        }
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(sellerEmail).matches()) {
-            Snackbar.make(btnSubmit, "Enter valid email", Snackbar.LENGTH_SHORT).show();
-            return;
-        }
-
-        if (vm.isDuplicate(isbn)) {
-            new MaterialAlertDialogBuilder(this)
-                    .setTitle("Duplicate ISBN")
-                    .setMessage("A book with ISBN " + isbn + " already exists.")
-                    .setPositiveButton("OK", null).show();
-            return;
-        }
-
-        int selId = rgCondition.getCheckedRadioButtonId();
-        RadioButton rb = findViewById(selId);
-        String condition = rb != null ? rb.getText().toString() : "Good";
-
-        Textbook t = new Textbook(
-                title, author, isbn, etEdition.getText().toString().trim(),
-                copies, price, sellerName, sellerEmail, bankName, accountNumber,
-                etCourse.getText().toString().trim(), condition,
-                etDescription.getText().toString().trim(), "",
-                localImagePath, digitalFilePath, digitalFileType
-        );
-
-        vm.insert(t);
-        Toast.makeText(this, "Listing added!", Toast.LENGTH_SHORT).show();
+        vm.update(current);
+        Toast.makeText(this, "Listing updated", Toast.LENGTH_SHORT).show();
         finish();
     }
 

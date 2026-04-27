@@ -1,29 +1,14 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- NoActionBar theme to allow custom Toolbar -->
-    <style name="Theme.TextbookMarketplace" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <!-- Primary brand color -->
-        <item name="colorPrimary">@color/primary</item>
-        <item name="colorPrimaryVariant">@color/primary_dark</item>
-        <item name="colorOnPrimary">@color/white</item>
-
-        <!-- Secondary brand color -->
-        <item name="colorSecondary">@color/accent</item>
-        <item name="colorSecondaryVariant">@color/accent_dark</item>
-        <item name="colorOnSecondary">@color/black</item>
-
-        <!-- Status bar color -->
-        <item name="android:statusBarColor">@color/primary_dark</item>
-
-        <!-- Background color -->
-        <item name="android:windowBackground">@color/background</item>
-
-        <!-- Enable these for better Toolbar support -->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+<resources>
+    <style name="Theme.TextbookMarketplace" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/colorOnPrimary</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/colorOnSecondary</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorSurface">@color/colorSurface</item>
+        <item name="colorError">@color/colorError</item>
+        <item name="android:statusBarColor">@color/colorPrimaryVariant</item>
+        <item name="android:navigationBarColor">@color/colorPrimaryVariant</item>
     </style>
-
-    <style name="Theme.TextbookMarketplace.AppBarOverlay" parent="ThemeOverlay.MaterialComponents.Dark.ActionBar" />
-
-    <style name="Theme.TextbookMarketplace.PopupOverlay" parent="ThemeOverlay.MaterialComponents.Light" />
 </resources>

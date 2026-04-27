@@ -24,11 +24,14 @@ public interface TextbookDao {
     @Query("SELECT * FROM textbooks ORDER BY date_added DESC")
     LiveData<List<Textbook>> getAllTextbooks();
 
-    @Query("SELECT * FROM textbooks WHERE title LIKE '%' || :searchQuery || '%' OR seller_name LIKE '%' || :searchQuery || '%'")
-    LiveData<List<Textbook>> searchTextbooks(String searchQuery);
+    @Query("SELECT * FROM textbooks WHERE title LIKE '%' || :q || '%' OR author LIKE '%' || :q || '%' OR seller_name LIKE '%' || :q || '%'")
+    LiveData<List<Textbook>> searchTextbooks(String q);
 
     @Query("SELECT * FROM textbooks WHERE isbn = :isbn LIMIT 1")
     Textbook getTextbookByIsbn(String isbn);
+
+    @Query("SELECT * FROM textbooks WHERE id = :id LIMIT 1")
+    Textbook getTextbookById(int id);
 
     @Query("SELECT * FROM textbooks WHERE seller_email = :email ORDER BY date_added DESC")
     LiveData<List<Textbook>> getTextbooksBySeller(String email);

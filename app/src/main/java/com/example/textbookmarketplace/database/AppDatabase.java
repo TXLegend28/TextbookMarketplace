@@ -6,7 +6,7 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import com.example.textbookmarketplace.model.Textbook;
 
-@Database(entities = {Textbook.class}, version = 1, exportSchema = false)
+@Database(entities = {Textbook.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase instance;
 

@@ -10,56 +10,31 @@ public class Textbook implements Serializable {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
-    @ColumnInfo(name = "title")
-    private String title;
+    @ColumnInfo(name = "title") private String title;
+    @ColumnInfo(name = "author") private String author;
+    @ColumnInfo(name = "isbn") private String isbn;
+    @ColumnInfo(name = "edition") private String edition;
+    @ColumnInfo(name = "copies") private int copies;
+    @ColumnInfo(name = "price") private double price;
+    @ColumnInfo(name = "seller_name") private String sellerName;
+    @ColumnInfo(name = "seller_email") private String sellerEmail;
+    @ColumnInfo(name = "bank_name") private String bankName;
+    @ColumnInfo(name = "account_number") private String accountNumber;
+    @ColumnInfo(name = "course") private String course;
+    @ColumnInfo(name = "condition") private String condition;
+    @ColumnInfo(name = "description") private String description;
+    @ColumnInfo(name = "image_url") private String imageUrl;
+    @ColumnInfo(name = "date_added") private long dateAdded;
 
-    @ColumnInfo(name = "author")
-    private String author;
+    @ColumnInfo(name = "local_image_path") private String localImagePath;
+    @ColumnInfo(name = "digital_file_path") private String digitalFilePath;
+    @ColumnInfo(name = "digital_file_type") private String digitalFileType;
 
-    @ColumnInfo(name = "isbn")
-    private String isbn;
-
-    @ColumnInfo(name = "edition")
-    private String edition;
-
-    @ColumnInfo(name = "copies")
-    private int copies;
-
-    @ColumnInfo(name = "price")
-    private double price;
-
-    @ColumnInfo(name = "seller_name")
-    private String sellerName;
-
-    @ColumnInfo(name = "seller_email")
-    private String sellerEmail;
-
-    @ColumnInfo(name = "bank_name")
-    private String bankName;
-
-    @ColumnInfo(name = "account_number")
-    private String accountNumber;
-
-    @ColumnInfo(name = "course")
-    private String course;
-
-    @ColumnInfo(name = "condition")
-    private String condition;
-
-    @ColumnInfo(name = "description")
-    private String description;
-
-    @ColumnInfo(name = "image_url")
-    private String imageUrl;
-
-    @ColumnInfo(name = "date_added")
-    private long dateAdded;
-
-    // Constructor
     public Textbook(String title, String author, String isbn, String edition,
                     int copies, double price, String sellerName, String sellerEmail,
                     String bankName, String accountNumber, String course,
-                    String condition, String description, String imageUrl) {
+                    String condition, String description, String imageUrl,
+                    String localImagePath, String digitalFilePath, String digitalFileType) {
         this.title = title;
         this.author = author;
         this.isbn = isbn;
@@ -74,10 +49,13 @@ public class Textbook implements Serializable {
         this.condition = condition;
         this.description = description;
         this.imageUrl = imageUrl;
+        this.localImagePath = localImagePath;
+        this.digitalFilePath = digitalFilePath;
+        this.digitalFileType = digitalFileType;
         this.dateAdded = System.currentTimeMillis();
     }
 
-    // Getters and Setters
+    // Getters & Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -125,4 +103,13 @@ public class Textbook implements Serializable {
 
     public long getDateAdded() { return dateAdded; }
     public void setDateAdded(long dateAdded) { this.dateAdded = dateAdded; }
+
+    public String getLocalImagePath() { return localImagePath; }
+    public void setLocalImagePath(String localImagePath) { this.localImagePath = localImagePath; }
+
+    public String getDigitalFilePath() { return digitalFilePath; }
+    public void setDigitalFilePath(String digitalFilePath) { this.digitalFilePath = digitalFilePath; }
+
+    public String getDigitalFileType() { return digitalFileType; }
+    public void setDigitalFileType(String digitalFileType) { this.digitalFileType = digitalFileType; }
 }

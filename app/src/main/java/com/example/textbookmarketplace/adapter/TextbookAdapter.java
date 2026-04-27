@@ -6,11 +6,14 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.textbookmarketplace.R;
 import com.example.textbookmarketplace.model.Textbook;
+import com.squareup.picasso.Picasso;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,100 +21,98 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class TextbookAdapter extends RecyclerView.Adapter<TextbookAdapter.ViewHolder> implements Filterable {
     private List<Textbook> textbooks;
-    private List<Textbook> textbooksFull;
+    private List<Textbook> fullList;
     private OnItemClickListener listener;
 
     public interface OnItemClickListener {
-        void onItemClick(Textbook textbook);
-        void onDetailsClick(Textbook textbook);
+        void onItemClick(Textbook t);
+        void onDetailsClick(Textbook t);
     }
 
-    public TextbookAdapter(List<Textbook> textbooks, OnItemClickListener listener) {
-        this.textbooks = textbooks;
-        this.textbooksFull = new ArrayList<>(textbooks);
+    public TextbookAdapter(List<Textbook> list, OnItemClickListener listener) {
+        this.textbooks = new ArrayList<>(list);
+        this.fullList = new ArrayList<>(list);
         this.listener = listener;
     }
 
-    @NonNull
-    @Override
+    @NonNull @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_textbook, parent, false);
-        return new ViewHolder(view);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_textbook, parent, false);
+        return new ViewHolder(v);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Textbook textbook = textbooks.get(position);
-        holder.tvTitle.setText(textbook.getTitle());
-        holder.tvAuthor.setText(textbook.getAuthor());
-        holder.tvPrice.setText(String.format("$%.2f", textbook.getPrice()));
-        holder.tvCopies.setText(textbook.getCopies() + " copies available");
+    public void onBindViewHolder(@NonNull ViewHolder h, int pos) {
+        Textbook t = textbooks.get(pos);
+        h.tvTitle.setText(t.getTitle());
+        h.tvAuthor.setText(t.getAuthor());
+        h.tvPrice.setText(String.format("$%.2f", t.getPrice()));
+        h.tvCopies.setText(t.getCopies() + " copies");
 
-        holder.itemView.setOnClickListener(v -> listener.onItemClick(textbook));
-        holder.btnDetails.setOnClickListener(v -> listener.onDetailsClick(textbook));
+        if (t.getLocalImagePath() != null && !t.getLocalImagePath().isEmpty()) {
+            Picasso.get().load(new File(t.getLocalImagePath())).placeholder(R.drawable.outline_book_24).into(h.ivCover);
+        } else {
+            h.ivCover.setImageResource(R.drawable.outline_book_24);
+        }
+
+        if (t.getDigitalFileType() != null) {
+            h.tvFileType.setVisibility(View.VISIBLE);
+            h.tvFileType.setText(t.getDigitalFileType().toUpperCase());
+        } else {
+            h.tvFileType.setVisibility(View.GONE);
+        }
+
+        h.itemView.setOnClickListener(v -> listener.onItemClick(t));
+        h.btnDetails.setOnClickListener(v -> listener.onDetailsClick(t));
     }
 
-    @Override
-    public int getItemCount() {
-        return textbooks != null ? textbooks.size() : 0;
-    }
+    @Override public int getItemCount() { return textbooks.size(); }
 
-    public void updateList(List<Textbook> newList) {
-        this.textbooks = newList;
-        this.textbooksFull = new ArrayList<>(newList);
+    public void updateList(List<Textbook> list) {
+        this.textbooks = new ArrayList<>(list);
+        this.fullList = new ArrayList<>(list);
         notifyDataSetChanged();
     }
 
-    @Override
-    public Filter getFilter() {
-        return textbookFilter;
-    }
+    @Override public Filter getFilter() { return filter; }
 
-    private Filter textbookFilter = new Filter() {
-        @Override
-        protected FilterResults performFiltering(CharSequence constraint) {
-            List<Textbook> filteredList = new ArrayList<>();
-
-            if (constraint == null || constraint.length() == 0) {
-                filteredList.addAll(textbooksFull);
+    private Filter filter = new Filter() {
+        @Override protected FilterResults performFiltering(CharSequence c) {
+            List<Textbook> filtered = new ArrayList<>();
+            if (c == null || c.length() == 0) {
+                filtered.addAll(fullList);
             } else {
-                String filterPattern = constraint.toString().toLowerCase().trim();
-
-                for (Textbook textbook : textbooksFull) {
-                    if (textbook.getTitle().toLowerCase().contains(filterPattern) ||
-                            textbook.getSellerName().toLowerCase().contains(filterPattern) ||
-                            textbook.getAuthor().toLowerCase().contains(filterPattern)) {
-                        filteredList.add(textbook);
-                    }
+                String p = c.toString().toLowerCase().trim();
+                for (Textbook t : fullList) {
+                    if (t.getTitle().toLowerCase().contains(p) ||
+                            t.getAuthor().toLowerCase().contains(p) ||
+                            t.getSellerName().toLowerCase().contains(p)) filtered.add(t);
                 }
             }
-
-            FilterResults results = new FilterResults();
-            results.values = filteredList;
-            return results;
+            FilterResults r = new FilterResults();
+            r.values = filtered;
+            return r;
         }
-
-        @Override
-        protected void publishResults(CharSequence constraint, FilterResults results) {
+        @Override protected void publishResults(CharSequence c, FilterResults r) {
             textbooks.clear();
-            textbooks.addAll((List) results.values);
+            textbooks.addAll((List<Textbook>) r.values);
             notifyDataSetChanged();
         }
     };
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        CircleImageView ivBookCover;
-        TextView tvTitle, tvAuthor, tvPrice, tvCopies;
+        CircleImageView ivCover;
+        TextView tvTitle, tvAuthor, tvPrice, tvCopies, tvFileType;
         ImageButton btnDetails;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivBookCover = itemView.findViewById(R.id.iv_book_cover);
+            ivCover = itemView.findViewById(R.id.iv_book_cover);
             tvTitle = itemView.findViewById(R.id.tv_title);
             tvAuthor = itemView.findViewById(R.id.tv_author);
             tvPrice = itemView.findViewById(R.id.tv_price);
             tvCopies = itemView.findViewById(R.id.tv_copies);
+            tvFileType = itemView.findViewById(R.id.tv_file_type);
             btnDetails = itemView.findViewById(R.id.btn_details);
         }
     }
